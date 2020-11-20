@@ -1,0 +1,31 @@
+version: '3'
+
+networks:
+  default:
+    external:
+      name: quic_test_net
+
+services:
+  server:
+    container_name: node-quic-server
+    image: node-quic-example:latest
+    working_dir: /usr/app
+    environment:
+      - PORT=1234
+    volumes:
+        - ./build/quic-server.js:/usr/app/quic-server.js
+        - ./build/example_ssl_certs:/usr/app/ssl_certs
+        command: node quic-server.js
+
+  # client:
+  #   container_name: node-quic-client
+  #   image: node-quic-example:latest
+  #   working_dir: /usr/app
+  #   environment:
+  #     - PORT=1234
+  #   volumes:
+  #     - ./build/quic-client.js:/usr/app/quic-client.js
+  #     - ./build/example_ssl_certs:/usr/app/ssl_certs
+  #   command: node quic-client.js
+  #   depends_on:
+  #     - node-quic-server
