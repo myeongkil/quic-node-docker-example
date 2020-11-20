@@ -25,7 +25,6 @@ function quic_usage {
     cecho "GREEN" " - build     : generate dummy_certs && copy code && build docker image"
     cecho "GREEN" " - up        : QUIC server docker up"
     cecho "GREEN" " - down      : QUIC server docker down"
-    cecho "GREEN" ""
     cecho "BLUE"  "-------------------------------------------------------------------------"
 }
 
