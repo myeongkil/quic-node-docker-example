@@ -12,7 +12,7 @@ RUN apt update && \
 
 RUN mkdir -p build && \
     cd build && \
-    git clone https://github.com/nodejs/node.git --depth 1 --branch v15.0.1 && \
+    git clone https://github.com/nodejs/node.git --depth 1 --branch v15.2.1 && \
     cd node && \
     ./configure --experimental-quic && \
     CC='ccache gcc' CXX='ccache g++' make -j2 && \
