@@ -3,34 +3,36 @@ const fs = require('fs');
 
 const key  = fs.readFileSync('./ssl_certs/server.key');
 const cert = fs.readFileSync('./ssl_certs/server.crt');
-const csr   = fs.readFileSync('./ssl_certs/server.csr');
+const ca   = fs.readFileSync('./ssl_certs/server.csr');
 const port = process.env.PORT || 1234;
+const servername = 'node-quic-example'
 
 const socket = createQuicSocket({
   client: {
     key,
     cert,
-    csr,
+    ca,
     requestCert: true,
     alpn: 'hello',
-    servername: 'node-quic-server'
+    servername: servername
   }
 });
 
-const req = socket.connect({
-  address: 'node-quic-server',
-  port,
-});
-
-req.on('secure', () => {
-  const stream = req.openStream();
-  // stdin -> stream
-  process.stdin.pipe(stream);
-  stream.on('data', (chunk) => console.log('client(on-secure): ', chunk.toString()));
-  stream.on('end', () => console.log('client(on-secure): end'));
-  stream.on('close', () => {
-    // Graceful shutdown
-    socket.close();
-  });
-  stream.on('error', (err) => console.error(err));
-});
+(async function() {
+    console.log(`⭐️ The socket is connected with session : ${servername}:${port}`);
+    const client = await socket.connect({
+        address: servername,
+        port: port,
+    });
+    client.on('secure', async () => {
+        const str = await client.openStream();
+        process.stdin.pipe(str);
+        str.on('data', (result) => {
+            console.log(`[SERVER] ▶️ ${result.toString()}`);
+        });
+        str.on('close', () => {
+            console.log('timeout - socket.close()');
+            socket.close();
+        });
+    });
+})();
